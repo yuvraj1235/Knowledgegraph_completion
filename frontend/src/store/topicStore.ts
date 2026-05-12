@@ -1,9 +1,13 @@
 import { create } from 'zustand';
 import type { Topic } from '../types/topic';
 
+interface TopicWithStatus extends Topic {
+  status: 'approved' | 'rejected' | 'pending';
+}
+
 interface TopicState {
   transcript: string;
-  topics: Topic[];
+  topics: TopicWithStatus[];
   isLoading: boolean;
   setTranscript: (transcript: string) => void;
   setTopics: (topics: Topic[]) => void;
@@ -25,12 +29,12 @@ export const useTopicStore = create<TopicState>((set, get) => ({
   setLoading: (isLoading) => set({ isLoading }),
   updateTopicStatus: (index, status) => set((state) => {
     const newTopics = [...state.topics];
-    newTopics[index] = { ...newTopics[index], status };
+    newTopics[index] = { ...newTopics[index], status: status };
     return { topics: newTopics };
   }),
   updateTopic: (index, topic) => set((state) => {
     const newTopics = [...state.topics];
-    newTopics[index] = topic;
+    newTopics[index] = { ...newTopics[index], ...topic };
     return { topics: newTopics };
   }),
   getApprovedTopics: () => get().topics.filter(t => t.status === 'approved'),

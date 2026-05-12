@@ -18,7 +18,4 @@ Analyze the text and return ONLY a structured JSON response matching this exact 
     }
   ]
 }
-
-Text to analyze:
-{text}
 """

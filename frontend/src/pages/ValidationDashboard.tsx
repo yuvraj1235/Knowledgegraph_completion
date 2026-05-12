@@ -6,7 +6,7 @@ import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 
 const ValidationDashboard = () => {
-  const { topics, getApprovedTopics } = useTopicStore();
+  const { topics } = useTopicStore();
   const [showGraph, setShowGraph] = useState(false);
   
   const approvedCount = topics.filter(t => t.status === 'approved').length;
@@ -27,6 +27,10 @@ const ValidationDashboard = () => {
   }
 
   const allValidated = pendingCount === 0;
+
+  const getApprovedTopics = () => {
+    return topics.filter(t => t.status === 'approved');
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex flex-col h-[calc(100vh-4rem)]">
