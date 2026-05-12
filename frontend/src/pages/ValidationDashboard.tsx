@@ -1,12 +1,9 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import EditableTopicCard from '../components/validation/EditableTopicCard';
 import ValidationToolbar from '../components/validation/ValidationToolbar';
 import KnowledgeGraph from '../components/graph/KnowledgeGraph';
-import EmptyState from '../components/dashboard/EmptyState';
 import { useTopicStore } from '../store/topicStore';
-import { CheckCircle2, AlertCircle, Network, ArrowLeft, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
 
 const ValidationDashboard = () => {
   const { topics, getApprovedTopics } = useTopicStore();
@@ -18,15 +15,13 @@ const ValidationDashboard = () => {
 
   if (topics.length === 0) {
     return (
-      <div className="max-w-6xl mx-auto px-6 py-6 flex flex-col items-center justify-center min-h-[60vh]">
-        <EmptyState
-          icon={<AlertCircle className="w-5 h-5 text-text-muted" strokeWidth={1.5} />}
-          title="No topics to validate"
-          description="Upload a document first to extract topics for validation."
-        />
-        <Link to="/" className="btn-ghost text-xs mt-4 gap-1.5">
-          <ArrowLeft className="w-3.5 h-3.5" /> Back to Ingestion
-        </Link>
+      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+        <div className="glass-panel p-12 inline-block">
+          <AlertCircle className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-slate-200 mb-2">No Topics to Validate</h2>
+          <p className="text-slate-400 mb-6">You need to ingest a document first.</p>
+          <a href="/" className="btn-primary">Go to Ingestion</a>
+        </div>
       </div>
     );
   }
@@ -34,94 +29,64 @@ const ValidationDashboard = () => {
   const allValidated = pendingCount === 0;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-6 space-y-5 flex flex-col h-[calc(100vh-56px)]">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex items-end justify-between"
-      >
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex flex-col h-[calc(100vh-4rem)]">
+      <header className="flex justify-between items-end">
         <div>
-          <h1 className="text-xl font-semibold text-text-primary tracking-tight">
-            {showGraph ? 'Knowledge Graph' : 'Validation'}
-          </h1>
-          <p className="text-sm text-text-muted mt-0.5">
-            {showGraph
-              ? 'Interactive visualization of your approved knowledge structure.'
-              : 'Review, edit, and approve extracted topics.'}
-          </p>
+          <h1 className="text-3xl font-bold text-slate-100">Knowledge Validation</h1>
+          <p className="text-slate-400 mt-2">Review, edit, and approve extracted topics before generating the graph.</p>
         </div>
 
         {allValidated && (
           <button
             onClick={() => setShowGraph(!showGraph)}
-            className={showGraph ? 'btn-ghost text-xs' : 'btn-primary text-xs'}
+            className={`btn-${showGraph ? 'secondary' : 'primary'} flex items-center space-x-2`}
           >
-            {showGraph ? (
-              <><ArrowLeft className="w-3.5 h-3.5" /> Back to Review</>
-            ) : (
-              <><Sparkles className="w-3.5 h-3.5" /> View Graph</>
-            )}
+            <span>{showGraph ? 'Back to Review' : 'View Knowledge Graph'}</span>
           </button>
         )}
-      </motion.div>
+      </header>
 
-      {/* Toolbar */}
       {!showGraph && (
-        <ValidationToolbar total={topics.length} approved={approvedCount} rejected={rejectedCount} pending={pendingCount} />
+        <ValidationToolbar
+          total={topics.length}
+          approved={approvedCount}
+          rejected={rejectedCount}
+          pending={pendingCount}
+        />
       )}
 
-      {/* Content */}
-      <AnimatePresence mode="wait">
-        {showGraph ? (
-          <motion.div
-            key="graph"
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.3 }}
-            className="flex-1 glass-card overflow-hidden"
-          >
-            <KnowledgeGraph topics={getApprovedTopics()} />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="cards"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 overflow-y-auto flex-1 pb-4 content-start"
-          >
-            {topics.map((topic, index) => (
-              <EditableTopicCard key={index} topic={topic} index={index} />
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {showGraph ? (
+        <div className="flex-1 glass-panel overflow-hidden relative border-primary/30 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+          <KnowledgeGraph topics={getApprovedTopics()} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto pb-8">
+          {topics.map((topic, index) => (
+            <EditableTopicCard
+              key={index}
+              topic={topic}
+              index={index}
+            />
+          ))}
+        </div>
+      )}
 
-      {/* Completion banner */}
       {allValidated && !showGraph && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="glass-card p-4 border-success/10 flex items-center justify-between shrink-0"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-success/10 flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4 text-success" />
-            </div>
+        <div className="glass-panel p-6 bg-success/10 border-success/30 flex items-center justify-between animate-pulse">
+          <div className="flex items-center space-x-3">
+            <CheckCircle2 className="w-8 h-8 text-success" />
             <div>
-              <p className="text-sm font-medium text-text-primary">All topics reviewed</p>
-              <p className="text-xs text-text-muted">Generate the knowledge graph to visualize your results.</p>
+              <h3 className="font-bold text-success">Validation Complete</h3>
+              <p className="text-sm text-slate-300">All topics have been reviewed. You can now generate the knowledge graph.</p>
             </div>
           </div>
-          <button onClick={() => setShowGraph(true)} className="btn-success text-xs">
-            <Network className="w-3.5 h-3.5" /> Generate Graph
+          <button
+            onClick={() => setShowGraph(true)}
+            className="btn-success"
+          >
+            Generate Graph
           </button>
-        </motion.div>
+        </div>
       )}
     </div>
   );
