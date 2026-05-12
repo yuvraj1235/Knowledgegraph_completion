@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   ReactFlow,
   Controls,
@@ -7,7 +6,8 @@ import {
   useEdgesState,
   type Node,
   type Edge,
-  MarkerType
+  MarkerType,
+  BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import type { Topic } from '../../types/topic';
@@ -17,107 +17,108 @@ interface Props {
 }
 
 const KnowledgeGraph = ({ topics }: Props) => {
-  // Transform topics into ReactFlow nodes and edges
   const initialNodes: Node[] = [];
   const initialEdges: Edge[] = [];
 
-  let yOffset = 0;
-
-  // Central Root Node
-  const rootNodeId = 'root';
+  // Root node
   initialNodes.push({
-    id: rootNodeId,
+    id: 'root',
     type: 'input',
     data: { label: 'Knowledge Base' },
-    position: { x: 400, y: 50 },
+    position: { x: 400, y: 30 },
     style: {
-      background: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
-      color: 'white',
-      border: 'none',
-      borderRadius: '8px',
-      fontWeight: 'bold',
-      padding: '12px 20px',
-      boxShadow: '0 4px 14px rgba(6, 182, 212, 0.4)'
-    }
+      background: 'rgba(103, 232, 249, 0.08)',
+      color: '#67e8f9',
+      border: '1px solid rgba(103, 232, 249, 0.2)',
+      borderRadius: '12px',
+      fontWeight: 600,
+      fontSize: '12px',
+      fontFamily: 'Inter, sans-serif',
+      padding: '10px 20px',
+      boxShadow: '0 0 20px rgba(103, 232, 249, 0.06)',
+    },
   });
 
   topics.forEach((topic, tIdx) => {
     const topicId = `t-${tIdx}`;
+    const cols = Math.min(topics.length, 4);
+    const col = tIdx % cols;
+    const row = Math.floor(tIdx / cols);
+    const xSpacing = 260;
+    const xOffset = (cols - 1) * xSpacing / 2;
 
-    // Topic Node
     initialNodes.push({
       id: topicId,
       data: { label: topic.title },
-      position: { x: 200 + (tIdx % 3) * 300, y: 200 + Math.floor(tIdx / 3) * 200 },
+      position: { x: col * xSpacing - xOffset + 400, y: 150 + row * 200 },
       style: {
-        background: '#1e293b',
-        color: '#e2e8f0',
-        border: '1px solid #06b6d4',
-        borderRadius: '8px',
-        padding: '10px 15px',
+        background: 'rgba(17, 17, 23, 0.8)',
+        color: '#e4e4e7',
+        border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: '12px',
+        fontSize: '11px',
+        fontFamily: 'Inter, sans-serif',
+        fontWeight: 500,
+        padding: '10px 16px',
         width: 180,
-      }
+        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+      },
     });
 
-    // Edge from root to topic
     initialEdges.push({
-      id: `e-${rootNodeId}-${topicId}`,
-      source: rootNodeId,
+      id: `e-root-${topicId}`,
+      source: 'root',
       target: topicId,
       animated: true,
-      style: { stroke: '#06b6d4', strokeWidth: 2 },
+      style: { stroke: 'rgba(103, 232, 249, 0.2)', strokeWidth: 1.5 },
     });
 
-    // Subtopic Nodes
     topic.subtopics.forEach((sub, sIdx) => {
       const subId = `s-${tIdx}-${sIdx}`;
-      const px = 100 + (tIdx % 3) * 300 + (sIdx % 2 === 0 ? -100 : 100);
-      const py = 300 + Math.floor(tIdx / 3) * 200 + Math.floor(sIdx / 2) * 80;
+      const subX = col * xSpacing - xOffset + 400 + (sIdx % 2 === 0 ? -90 : 90);
+      const subY = 270 + row * 200 + Math.floor(sIdx / 2) * 60;
 
       initialNodes.push({
         id: subId,
         data: { label: sub.title },
-        position: { x: px, y: py },
+        position: { x: subX, y: subY },
         style: {
-          background: '#0f172a',
-          color: '#cbd5e1',
-          border: '1px solid #475569',
-          borderRadius: '4px',
-          padding: '8px',
-          fontSize: '12px',
+          background: 'rgba(10, 10, 15, 0.9)',
+          color: '#a1a1aa',
+          border: '1px solid rgba(255,255,255,0.04)',
+          borderRadius: '8px',
+          fontSize: '10px',
+          fontFamily: 'Inter, sans-serif',
+          padding: '6px 12px',
           width: 140,
-        }
+        },
       });
 
-      // Edge from topic to subtopic
       initialEdges.push({
         id: `e-${topicId}-${subId}`,
         source: topicId,
         target: subId,
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          color: '#475569',
-        },
-        style: { stroke: '#475569' },
+        markerEnd: { type: MarkerType.ArrowClosed, color: 'rgba(255,255,255,0.1)' },
+        style: { stroke: 'rgba(255,255,255,0.06)', strokeWidth: 1 },
       });
     });
   });
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, , onNodesChange] = useNodesState(initialNodes);
+  const [edges, , onEdgesChange] = useEdgesState(initialEdges);
 
   return (
-    <div className="w-full h-full min-h-[600px] bg-background rounded-xl">
+    <div className="w-full h-full min-h-[500px]">
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         fitView
-        attributionPosition="bottom-right"
+        proOptions={{ hideAttribution: true }}
       >
-        <Background color="#334155" gap={20} size={1} />
-        <Controls className="bg-surface border-slate-700 fill-slate-300" />
+        <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="rgba(255,255,255,0.03)" />
+        <Controls showInteractive={false} />
       </ReactFlow>
     </div>
   );

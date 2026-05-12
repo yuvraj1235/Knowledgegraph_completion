@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Dashboard from './pages/Dashboard';
 import ValidationDashboard from './pages/ValidationDashboard';
-
 function App() {
   return (
     <BrowserRouter>

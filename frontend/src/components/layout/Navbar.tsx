@@ -1,50 +1,40 @@
-import { Link, useLocation } from 'react-router-dom';
-import { BrainCircuit, Library, CheckSquare } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
 
 const Navbar = () => {
-  const location = useLocation();
-
   return (
-    <nav className="fixed top-0 w-full z-50 glass-panel rounded-none border-t-0 border-x-0 border-slate-700/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-3">
-            <div className="bg-primary/20 p-2 rounded-lg text-primary">
-              <BrainCircuit className="w-6 h-6" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent">
-              EduGraph AI
-            </span>
-          </div>
-          
-          <div className="flex space-x-6">
-            <Link 
-              to="/" 
-              className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
-                location.pathname === '/' 
-                  ? 'text-primary' 
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Library className="w-4 h-4" />
-              <span>Ingestion</span>
-            </Link>
-            
-            <Link 
-              to="/validation" 
-              className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
-                location.pathname === '/validation' 
-                  ? 'text-primary' 
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <CheckSquare className="w-4 h-4" />
-              <span>Validation</span>
-            </Link>
-          </div>
+    <header className="h-14 shrink-0 flex items-center justify-between px-6 border-b border-border bg-background/60 backdrop-blur-xl z-40">
+      {/* Left: Greeting */}
+      <div className="flex items-center gap-3">
+        <div>
+          <h2 className="text-sm font-medium text-text-primary leading-tight">EduGraph AI</h2>
+          <p className="text-xs text-text-muted leading-tight">Knowledge intelligence platform</p>
         </div>
       </div>
-    </nav>
+
+      {/* Center: Search */}
+      <div className="hidden md:flex items-center max-w-xs w-full">
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted" />
+          <input
+            type="text"
+            placeholder="Search topics…"
+            className="w-full h-8 pl-9 pr-3 text-xs bg-white/[0.03] border border-border rounded-lg text-text-primary focus:outline-none focus:border-border-hover focus:bg-white/[0.05] transition-all placeholder:text-text-muted"
+          />
+          <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-text-muted bg-white/[0.03] px-1.5 py-0.5 rounded border border-border font-mono">⌘K</kbd>
+        </div>
+      </div>
+
+      {/* Right: Actions */}
+      <div className="flex items-center gap-2">
+        <button className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-secondary hover:bg-white/[0.03] transition-all relative">
+          <Bell className="w-4 h-4" strokeWidth={1.5} />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary rounded-full" />
+        </button>
+        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-accent-indigo/40 to-accent-violet/40 border border-white/10 flex items-center justify-center">
+          <span className="text-[10px] font-semibold text-white/80">Y</span>
+        </div>
+      </div>
+    </header>
   );
 };
 

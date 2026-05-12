@@ -1,57 +1,110 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0f172a;
-  --color-surface: #1e293b;
-  --color-primary: #06b6d4;
-  --color-success: #10b981;
-  --color-danger: #ef4444;
+  --color-background: #0a0a0f;
+  --color-surface: #111117;
+  --color-surface-raised: #19191f;
+  --color-surface-hover: #1f1f27;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-hover: rgba(255, 255, 255, 0.1);
+  --color-primary: #67e8f9;
+  --color-accent-indigo: #818cf8;
+  --color-accent-violet: #a78bfa;
+  --color-success: #34d399;
+  --color-danger: #f87171;
+  --color-warning: #fbbf24;
+  --color-text-primary: #e4e4e7;
+  --color-text-secondary: #71717a;
+  --color-text-muted: #52525b;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   body {
-    @apply bg-background text-slate-200 min-h-screen font-sans antialiased;
+    font-family: var(--font-sans);
+    @apply bg-background text-text-primary min-h-screen antialiased selection:bg-primary/20 selection:text-white;
+  }
+
+  ::placeholder {
+    @apply text-text-muted;
   }
 }
 
 @layer components {
-  .glass-panel {
-    @apply bg-surface/80 backdrop-blur-md border border-slate-700/50 rounded-xl shadow-xl;
+  .glass-card {
+    background: rgba(17, 17, 23, 0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    @apply border border-border rounded-2xl transition-all duration-300 ease-out;
   }
-  
+
+  .glass-card-hover:hover {
+    background: rgba(25, 25, 31, 0.7);
+    @apply border-border-hover shadow-[0_8px_30px_rgba(0,0,0,0.3)] -translate-y-px;
+  }
+
   .btn-primary {
-    @apply px-4 py-2 bg-primary hover:bg-cyan-400 text-white font-medium rounded-lg transition-colors shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply px-4 py-2.5 bg-white/90 hover:bg-white text-zinc-950 font-medium text-sm rounded-xl
+           transition-all duration-200 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed
+           inline-flex items-center justify-center gap-2;
   }
-  
-  .btn-secondary {
-    @apply px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium rounded-lg transition-colors border border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed;
+
+  .btn-ghost {
+    @apply px-4 py-2.5 bg-transparent hover:bg-white/5 text-text-primary font-medium text-sm rounded-xl
+           transition-all duration-200 border border-transparent hover:border-border active:scale-[0.97]
+           disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2;
   }
-  
+
   .btn-success {
-    @apply px-4 py-2 bg-success hover:bg-emerald-400 text-white font-medium rounded-lg transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply px-4 py-2.5 bg-success/10 hover:bg-success/20 text-success font-medium text-sm rounded-xl
+           transition-all duration-200 border border-success/10 active:scale-[0.97]
+           disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2;
   }
-  
+
   .btn-danger {
-    @apply px-4 py-2 bg-danger hover:bg-red-400 text-white font-medium rounded-lg transition-colors shadow-lg shadow-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply px-4 py-2.5 bg-danger/10 hover:bg-danger/20 text-danger font-medium text-sm rounded-xl
+           transition-all duration-200 border border-danger/10 active:scale-[0.97]
+           disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2;
   }
 }
 
-/* Custom Scrollbar */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
 }
-
 ::-webkit-scrollbar-track {
-  background: rgba(30, 41, 59, 0.5); 
-  border-radius: 4px;
+  background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3); 
-  border-radius: 4px;
+  background: rgba(113, 113, 122, 0.3);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(113, 113, 122, 0.5);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.5); 
+/* React Flow overrides */
+.react-flow__attribution {
+  display: none !important;
+}
+.react-flow__controls {
+  background: rgba(17, 17, 23, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+.react-flow__controls-button {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  fill: #a1a1aa !important;
+}
+.react-flow__controls-button:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
 }

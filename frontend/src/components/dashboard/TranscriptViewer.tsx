@@ -1,29 +1,47 @@
+import { motion } from 'framer-motion';
 import { FileText } from 'lucide-react';
 import { useTopicStore } from '../../store/topicStore';
 
 const TranscriptViewer = () => {
   const { transcript } = useTopicStore();
 
-  if (!transcript) {
-    return (
-      <div className="glass-panel p-6 h-[400px] flex flex-col items-center justify-center text-slate-500">
-        <FileText className="w-12 h-12 mb-4 opacity-50" />
-        <p>No transcript available.</p>
-        <p className="text-sm">Upload a PDF to see the extracted text here.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="glass-panel h-[600px] flex flex-col">
-      <div className="p-4 border-b border-slate-700/50 flex items-center space-x-2">
-        <FileText className="w-5 h-5 text-primary" />
-        <h3 className="font-semibold text-lg">Document Transcript</h3>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3, duration: 0.35 }}
+      className="glass-card flex flex-col h-[420px]"
+    >
+      <div className="px-5 py-3.5 border-b border-border flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2">
+          <FileText className="w-4 h-4 text-text-muted" strokeWidth={1.5} />
+          <h3 className="text-sm font-medium text-text-primary">Transcript</h3>
+        </div>
+        {transcript && (
+          <span className="text-[10px] font-medium text-text-muted bg-white/[0.03] border border-border rounded-md px-2 py-0.5">
+            {transcript.length.toLocaleString()} chars
+          </span>
+        )}
       </div>
-      <div className="p-6 overflow-y-auto flex-1 font-mono text-sm leading-relaxed text-slate-300 whitespace-pre-wrap">
-        {transcript}
+
+      <div className="flex-1 overflow-y-auto p-5">
+        {transcript ? (
+          <p className="text-[13px] leading-relaxed text-text-secondary font-light whitespace-pre-wrap tracking-wide">
+            {transcript}
+          </p>
+        ) : (
+          <div className="h-full flex flex-col items-center justify-center text-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.02] border border-border flex items-center justify-center">
+              <FileText className="w-4 h-4 text-text-muted" strokeWidth={1.5} />
+            </div>
+            <div>
+              <p className="text-sm text-text-muted">No transcript yet</p>
+              <p className="text-xs text-text-muted/60 mt-0.5">Upload a PDF to view extracted text</p>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

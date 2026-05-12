@@ -1,4 +1,5 @@
-import { CheckCircle2, XCircle, AlertCircle, List } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { CheckCircle2, XCircle, Clock, BarChart3 } from 'lucide-react';
 
 interface Props {
   total: number;
@@ -10,57 +11,47 @@ interface Props {
 const ValidationToolbar = ({ total, approved, rejected, pending }: Props) => {
   const progress = total > 0 ? ((approved + rejected) / total) * 100 : 0;
 
+  const stats = [
+    { icon: BarChart3, label: 'Total', value: total, color: 'text-text-secondary' },
+    { icon: CheckCircle2, label: 'Approved', value: approved, color: 'text-success' },
+    { icon: XCircle, label: 'Rejected', value: rejected, color: 'text-danger' },
+    { icon: Clock, label: 'Pending', value: pending, color: 'text-warning' },
+  ];
+
   return (
-    <div className="glass-panel p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-      <div className="flex items-center space-x-6">
-        <div className="flex items-center space-x-2">
-          <List className="w-5 h-5 text-primary" />
-          <div>
-            <p className="text-sm font-semibold text-slate-200">{total}</p>
-            <p className="text-xs text-slate-500 uppercase tracking-wide">Total Topics</p>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1, duration: 0.3 }}
+      className="glass-card p-4 flex flex-col sm:flex-row items-center justify-between gap-4"
+    >
+      <div className="flex items-center gap-5">
+        {stats.map((stat) => (
+          <div key={stat.label} className="flex items-center gap-2">
+            <stat.icon className={`w-3.5 h-3.5 ${stat.color}`} strokeWidth={1.5} />
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-sm font-semibold text-text-primary">{stat.value}</span>
+              <span className="text-[10px] text-text-muted uppercase tracking-wider">{stat.label}</span>
+            </div>
           </div>
-        </div>
-        
-        <div className="w-px h-8 bg-slate-700"></div>
-        
-        <div className="flex items-center space-x-2">
-          <CheckCircle2 className="w-5 h-5 text-success" />
-          <div>
-            <p className="text-sm font-semibold text-slate-200">{approved}</p>
-            <p className="text-xs text-slate-500 uppercase tracking-wide">Approved</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <XCircle className="w-5 h-5 text-danger" />
-          <div>
-            <p className="text-sm font-semibold text-slate-200">{rejected}</p>
-            <p className="text-xs text-slate-500 uppercase tracking-wide">Rejected</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <AlertCircle className="w-5 h-5 text-amber-500" />
-          <div>
-            <p className="text-sm font-semibold text-slate-200">{pending}</p>
-            <p className="text-xs text-slate-500 uppercase tracking-wide">Pending</p>
-          </div>
-        </div>
+        ))}
       </div>
-      
-      <div className="w-full md:w-64">
-        <div className="flex justify-between text-xs mb-1">
-          <span className="text-slate-400">Progress</span>
-          <span className="font-medium text-primary">{Math.round(progress)}%</span>
+
+      <div className="w-full sm:w-40">
+        <div className="flex justify-between text-[10px] mb-1.5">
+          <span className="text-text-muted uppercase tracking-wider">Progress</span>
+          <span className="text-text-secondary font-medium">{Math.round(progress)}%</span>
         </div>
-        <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-primary to-emerald-400 transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
+        <div className="h-1.5 w-full bg-white/[0.04] rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-gradient-to-r from-primary/80 to-success/80 rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
