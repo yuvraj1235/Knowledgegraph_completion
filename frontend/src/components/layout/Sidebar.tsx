@@ -5,11 +5,13 @@ import {
   CheckCircle2,
   Sparkles,
   Settings,
+  Compass,
 } from 'lucide-react';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
   { icon: CheckCircle2, label: 'Validation', path: '/validation' },
+  { icon: Compass, label: 'Recommendations', path: '/recommendations' },
 ];
 
 const Sidebar = () => {

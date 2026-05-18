@@ -52,23 +52,25 @@ const KnowledgeGraph = ({ topics }: Props) => {
       data: { label: topic.title },
       position: { x: col * xSpacing - xOffset + 400, y: 150 + row * 200 },
       style: {
-        background: 'rgba(17, 17, 23, 0.8)',
-        color: '#e4e4e7',
-        border: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(6, 182, 212, 0.1)',
+        color: '#22d3ee', // cyan
+        border: '1px solid rgba(6, 182, 212, 0.4)',
         borderRadius: '12px',
         fontSize: '11px',
         fontFamily: 'Inter, sans-serif',
-        fontWeight: 500,
+        fontWeight: 600,
         padding: '10px 16px',
         width: 180,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+        boxShadow: '0 4px 20px rgba(6, 182, 212, 0.15)',
       },
+      title: topic.summary || topic.title, // hover tooltip
     });
 
     initialEdges.push({
       id: `e-root-${topicId}`,
       source: 'root',
       target: topicId,
+      type: 'smoothstep',
       animated: true,
       style: { stroke: 'rgba(103, 232, 249, 0.2)', strokeWidth: 1.5 },
     });
@@ -83,25 +85,42 @@ const KnowledgeGraph = ({ topics }: Props) => {
         data: { label: sub.title },
         position: { x: subX, y: subY },
         style: {
-          background: 'rgba(10, 10, 15, 0.9)',
-          color: '#a1a1aa',
-          border: '1px solid rgba(255,255,255,0.04)',
+          background: 'rgba(99, 102, 241, 0.1)',
+          color: '#818cf8', // indigo
+          border: '1px solid rgba(99, 102, 241, 0.3)',
           borderRadius: '8px',
           fontSize: '10px',
           fontFamily: 'Inter, sans-serif',
           padding: '6px 12px',
           width: 140,
         },
+        title: sub.description || sub.title, // hover tooltip
       });
 
       initialEdges.push({
         id: `e-${topicId}-${subId}`,
         source: topicId,
         target: subId,
-        markerEnd: { type: MarkerType.ArrowClosed, color: 'rgba(255,255,255,0.1)' },
-        style: { stroke: 'rgba(255,255,255,0.06)', strokeWidth: 1 },
+        type: 'smoothstep',
+        markerEnd: { type: MarkerType.ArrowClosed, color: 'rgba(99, 102, 241, 0.5)' },
+        style: { stroke: 'rgba(99, 102, 241, 0.3)', strokeWidth: 1 },
       });
     });
+
+    // Simulate a similar edge for demonstration
+    if (tIdx > 0) {
+      initialEdges.push({
+        id: `e-sim-${tIdx-1}-${tIdx}`,
+        source: `t-${tIdx-1}`,
+        target: topicId,
+        type: 'smoothstep',
+        animated: true,
+        style: { stroke: 'rgba(168, 85, 247, 0.6)', strokeWidth: 2, strokeDasharray: '5,5' }, // purple similar edge
+        label: 'SIMILAR_TO',
+        labelStyle: { fill: '#a855f7', fontSize: 10, fontWeight: 700 },
+        labelBgStyle: { fill: 'rgba(0,0,0,0.8)' },
+      });
+    }
   });
 
   const [nodes, , onNodesChange] = useNodesState(initialNodes);

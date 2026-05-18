@@ -203,8 +203,7 @@ http://localhost:5173
 ---
 
 # 3. Backend Setup
-
-```bash id="0yqhtz"
+```
 cd backend
 
 pip install -r requirements.txt

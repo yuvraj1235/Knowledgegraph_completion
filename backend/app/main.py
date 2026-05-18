@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes.ingestion import router as ingestion_router
+from app.routes.graph_routes import router as graph_router
+from app.graph.neo4j_client import neo4j_client
+from contextlib import asynccontextmanager
 import logging
 
 # Configure basic logging
@@ -9,10 +12,17 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await neo4j_client.init_schema()
+    yield
+    await neo4j_client.close()
+
 app = FastAPI(
     title="Educational Knowledge Graph API",
     description="API for ingesting educational PDFs and extracting topic hierarchies using GPT-4o",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Configure CORS for frontend access
@@ -26,6 +36,7 @@ app.add_middleware(
 
 # Register routes
 app.include_router(ingestion_router)
+app.include_router(graph_router)
 
 @app.get("/", tags=["Root"])
 async def root():

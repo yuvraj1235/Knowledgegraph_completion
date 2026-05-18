@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { Topic } from '../../types/topic';
 import { useTopicStore } from '../../store/topicStore';
-import { Check, X, Edit2, Save, Trash2, Plus } from 'lucide-react';
+import { Check, X, Edit2, Save, Trash2, Plus, Loader2 } from 'lucide-react';
+import { jsonApi } from '../../api/axios';
 
 interface Props {
   topic: Topic;
@@ -11,6 +12,7 @@ interface Props {
 const EditableTopicCard = ({ topic, index }: Props) => {
   const { updateTopic, updateTopicStatus } = useTopicStore();
   const [isEditing, setIsEditing] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
   const [editedTopic, setEditedTopic] = useState<Topic>({ ...topic });
 
   const handleSave = () => {
@@ -22,6 +24,20 @@ const EditableTopicCard = ({ topic, index }: Props) => {
     pending: 'border-slate-700 bg-surface',
     approved: 'border-success/50 bg-success/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]',
     rejected: 'border-danger/50 bg-danger/5 shadow-[0_0_15px_rgba(239,68,68,0.1)]'
+  };
+
+  const handleApprove = async () => {
+    if (topic.status === 'approved') return;
+    setIsApproving(true);
+    try {
+      await jsonApi.post('/approve-topic', topic);
+      updateTopicStatus(index, 'approved');
+    } catch (error) {
+      console.error('Failed to approve topic', error);
+      alert('Failed to approve topic. See console for details.');
+    } finally {
+      setIsApproving(false);
+    }
   };
 
   if (isEditing) {
@@ -141,14 +157,15 @@ const EditableTopicCard = ({ topic, index }: Props) => {
 
       <div className="flex items-center space-x-2 pt-4 border-t border-slate-700/50">
         <button
-          onClick={() => updateTopicStatus(index, 'approved')}
+          onClick={handleApprove}
+          disabled={isApproving}
           className={`flex-1 py-2 rounded-lg flex justify-center items-center space-x-1 font-medium transition-colors ${topic.status === 'approved'
             ? 'bg-success text-white shadow-lg shadow-emerald-500/20'
             : 'bg-slate-800 text-slate-400 hover:bg-success/20 hover:text-success'
-            }`}
+            } disabled:opacity-50`}
         >
-          <Check className="w-4 h-4" />
-          <span>Approve</span>
+          {isApproving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+          <span>{isApproving ? 'Approving...' : 'Approve'}</span>
         </button>
 
         <button
